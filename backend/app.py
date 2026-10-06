@@ -24,6 +24,20 @@ class BDDFeatureSuite(BaseModel):
     scenarios: List[ScenarioBlock] = Field(description="Happy paths plus defensive edge cases.")
 
 
+class RequirementStatement(BaseModel):
+    requirement_id: str = Field(description="Sequential identifier such as REQ-001.")
+    description: str = Field(description="One clear, atomic requirement from the input.")
+
+
+class RequirementAnalysis(BaseModel):
+    feature_name: str = Field(description="Short name for the feature described by the input.")
+    actors: List[str] = Field(description="Users or systems that interact with this feature.")
+    requirements: List[RequirementStatement] = Field(description="Atomic functional requirements with sequential IDs.")
+    business_rules: List[str] = Field(description="Business policies or behavior rules stated in the input.")
+    constraints: List[str] = Field(description="Numeric, time, format, or other explicit limits stated in the input.")
+    ambiguities: List[str] = Field(description="Missing or unclear details that need clarification.")
+
+
 # ========================================================
 # 2. LLM PIPELINE
 # ========================================================
@@ -74,6 +88,25 @@ prompt_template = ChatPromptTemplate.from_messages([
 ])
 
 chain = prompt_template | llm | parser
+
+analysis_parser = PydanticOutputParser(pydantic_object=RequirementAnalysis)
+analysis_prompt = ChatPromptTemplate.from_messages([
+    ("system", """You are a requirements analyst. Analyze only the supplied requirement; do not invent behavior.
+Split explicit behavior into atomic requirements and assign IDs REQ-001, REQ-002, and so on.
+Identify actors, business rules, explicit constraints, and ambiguities that could affect implementation or testing.
+If a category has no supported findings, return an empty list. Return only structured output.
+
+{format_instructions}"""),
+    ("user", "Requirement:\n\n{requirement_text}"),
+])
+analysis_chain = analysis_prompt | llm | analysis_parser
+
+
+def analyze_requirement(requirement_text: str) -> RequirementAnalysis:
+    return analysis_chain.invoke({
+        "requirement_text": requirement_text,
+        "format_instructions": analysis_parser.get_format_instructions(),
+    })
 
 
 # ========================================================

@@ -16,6 +16,7 @@
 
 * { box-sizing: border-box; margin: 0; }
 [hidden] { display: none !important; }
+.hidden { display: none !important; }
 
 body {
     background: var(--bg);
@@ -67,6 +68,7 @@ textarea:focus-visible, input:focus-visible, button:focus-visible, summary:focus
 }
 
 .input-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 14px; }
+.input-actions { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
 
 .primary {
     font: inherit; font-weight: 600;
@@ -77,6 +79,28 @@ textarea:focus-visible, input:focus-visible, button:focus-visible, summary:focus
 }
 .primary:hover { background: var(--accent-dark); }
 .primary:disabled { background: #a9b6d6; cursor: wait; }
+.secondary {
+    font: inherit; font-weight: 600;
+    background: #e8edf7; color: var(--ink);
+    border: 1px solid #d4dce9; border-radius: 8px;
+    padding: 9px 14px; cursor: pointer;
+}
+.secondary:hover { background: #dce5f4; }
+.secondary:disabled { opacity: 0.65; cursor: wait; }
+
+/* ---- requirement analysis ---- */
+.analysis-panel { margin: 0 0 22px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+.analysis-panel h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 12px; }
+.analysis-panel #analysis-loading { margin-bottom: 12px; }
+.analysis-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 24px; }
+.analysis-item { min-width: 0; }
+.analysis-item > strong { display: block; font-size: 0.82rem; color: var(--muted); margin-bottom: 5px; }
+.analysis-item ul { padding-left: 20px; }
+.analysis-item li + li { margin-top: 3px; }
+.analysis-tag { display: inline-block; margin: 0 6px 4px 0; padding: 2px 8px; border-radius: 999px; background: #e8edf7; font-size: 0.82rem; }
+.analysis-row { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); gap: 8px; padding: 4px 0; }
+.analysis-row strong { font: 500 0.8rem var(--mono); color: var(--accent-dark); }
+.analysis-empty { color: var(--muted); font-size: 0.9rem; }
 
 .link-btn { font: inherit; font-size: 0.86rem; background: none; border: 0; color: var(--accent); cursor: pointer; padding: 2px 4px; }
 .link-btn:hover { text-decoration: underline; }
@@ -135,4 +159,11 @@ textarea:focus-visible, input:focus-visible, button:focus-visible, summary:focus
     .input-panel { position: static; }
     textarea { min-height: 220px; }
     .top { flex-direction: column; }
+}
+
+@media (max-width: 600px) {
+    .input-foot { align-items: flex-start; flex-direction: column; }
+    .input-actions { width: 100%; }
+    .input-actions button { flex: 1 1 auto; }
+    .analysis-grid { grid-template-columns: 1fr; }
 }

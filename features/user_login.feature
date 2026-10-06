@@ -1,42 +1,32 @@
 Feature: User Login
-  Allow users to log in with email and password, locking accounts after 5 failed attempts for 15 minutes.
+  Users can log in with their registered email and password. If the user enters an incorrect password 5 times, the account must be locked for 15 minutes.
 
   Scenario: Successful Login
-    Given The user has a valid email 'user@example.com' and password 'Correct#123'.
-    When The user logs in.
-    Then The user is redirected to the dashboard.
+    Given a registered user with email 'user@example.com' and password 'password123'
+    When the user logs in with email 'user@example.com' and password 'password123'
+    Then the user is logged in successfully
 
-  Scenario: Failed Login Attempt 1
-    Given The user has a valid email 'user@example.com' and password 'Wrong#123'.
-    When The user logs in.
-    Then The login fails with error message 'Invalid password'.
-
-  Scenario: Failed Login Attempt 5
-    Given The user has a valid email 'user@example.com' and password 'Wrong#123'.
-    When The user logs in.
-    Then The account is locked for 15 minutes with error message 'Account locked due to too many failed attempts'.
+  Scenario: Invalid Credentials
+    Given a registered user with email 'user@example.com' and password 'password123'
+    When the user logs in with email 'user@example.com' and password 'Wrong#123'
+    Then the error message 'Invalid email or password' is shown
 
   Scenario: Account Locked
-    Given The user has a valid email 'user@example.com' and password 'Wrong#123'. The account has been locked for 15 minutes.
-    When The user logs in.
-    Then The login fails with error message 'Account locked due to too many failed attempts'.
+    Given a registered user with email 'user@example.com' and password 'password123' who has entered 5 incorrect passwords
+    When the user logs in with email 'user@example.com' and password 'Wrong#123'
+    Then the error message 'Account locked for 15 minutes' is shown
 
-  Scenario: Failed Login Attempt Just Below Limit
-    Given The user has a valid email 'user@example.com' and password 'Wrong#123'. The account has been locked for 14 minutes.
-    When The user logs in.
-    Then The login fails with error message 'Invalid password'.
+  Scenario: Lock Time Has Passed
+    Given a registered user with email 'user@example.com' and password 'password123' who has entered 5 incorrect passwords and 15 minutes have passed
+    When the user logs in with email 'user@example.com' and password 'password123'
+    Then the user is logged in successfully
 
-  Scenario: Failed Login Attempt Exactly at Limit
-    Given The user has a valid email 'user@example.com' and password 'Wrong#123'. The account has been locked for 15 minutes.
-    When The user logs in.
-    Then The account is locked for 15 minutes with error message 'Account locked due to too many failed attempts'.
+  Scenario: Correct Password Rejected During Lock
+    Given a registered user with email 'user@example.com' and password 'password123' who has entered 5 incorrect passwords and 15 minutes have not passed
+    When the user logs in with email 'user@example.com' and password 'password123'
+    Then the error message 'Account locked for 15 minutes' is shown
 
-  Scenario: Correct Password Rejected While Account Locked
-    Given The user has a valid email 'user@example.com' and password 'Correct#123'. The account has been locked for 15 minutes.
-    When The user logs in.
-    Then The login fails with error message 'Account locked due to too many failed attempts'.
-
-  Scenario: Account Unlocked After 15 Minutes
-    Given The user has a valid email 'user@example.com' and password 'Wrong#123'. The account has been locked for 15 minutes.
-    When 15 minutes have passed.
-    Then The account is no longer locked.
+  Scenario: Just Below the Limit
+    Given a registered user with email 'user@example.com' and password 'password123' who has entered 4 incorrect passwords
+    When the user logs in with email 'user@example.com' and password 'Wrong#123'
+    Then the error message 'Invalid email or password' is shown

@@ -29,11 +29,46 @@
                     placeholder="Paste a user story, a Jira ticket, or rough feature notes.&#10;&#10;Example: Users log in with email and password. After 5 failed attempts the account is locked for 15 minutes."></textarea>
                 <div class="input-foot">
                     <span id="char-count" class="muted">0 / 5000</span>
-                    <button id="generate-btn" class="primary" type="button">Generate scenarios</button>
+                    <div class="input-actions">
+                        <button id="analyze-btn" class="secondary" type="button">Analyze Requirement</button>
+                        <button id="generate-btn" class="primary" type="button">Generate scenarios</button>
+                    </div>
                 </div>
             </section>
 
             <section class="panel results-panel">
+                <section id="analysis-panel" class="analysis-panel hidden" aria-labelledby="analysis-title">
+                    <h3 id="analysis-title">Requirement Analysis</h3>
+                    <p id="analysis-loading" class="muted" hidden>Analyzing requirement with the local model...</p>
+                    <div id="analysis-error" class="notice" role="alert" hidden></div>
+                    <div id="analysis-content" class="analysis-grid" hidden>
+                        <div class="analysis-item">
+                            <strong>Feature</strong>
+                            <span id="analysis-feature"></span>
+                        </div>
+                        <div class="analysis-item">
+                            <strong>Actors</strong>
+                            <div id="analysis-actors"></div>
+                        </div>
+                        <div class="analysis-item">
+                            <strong>Requirements</strong>
+                            <div id="analysis-requirements"></div>
+                        </div>
+                        <div class="analysis-item">
+                            <strong>Business Rules</strong>
+                            <div id="analysis-rules"></div>
+                        </div>
+                        <div class="analysis-item">
+                            <strong>Constraints</strong>
+                            <div id="analysis-constraints"></div>
+                        </div>
+                        <div class="analysis-item">
+                            <strong>Ambiguities</strong>
+                            <div id="analysis-ambiguities"></div>
+                        </div>
+                    </div>
+                </section>
+
                 <div class="panel-head">
                     <h2>Scenarios</h2>
                     <span id="count" class="muted"></span>

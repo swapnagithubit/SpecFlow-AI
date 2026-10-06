@@ -5,7 +5,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from app import execute_algorithmic_quality_gate
+from app import analyze_requirement, execute_algorithmic_quality_gate
 
 server_app = FastAPI(title="GenAI Test Automation Server Engine", version="1.0.0")
 
@@ -56,6 +56,18 @@ def safe_filename(name: str) -> str:
 @server_app.get("/")
 def root():
     return {"status": "ok", "docs": "/docs"}
+
+
+@server_app.post("/api/v1/analyze-requirement")
+def process_requirement_analysis(payload: PRDPayload):
+    if not payload.requirement_text.strip():
+        raise HTTPException(status_code=400, detail="Requirement text cannot be empty.")
+
+    try:
+        analysis = analyze_requirement(payload.requirement_text)
+        return {"status": "success", "analysis": analysis}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Requirement analysis failed: {e}")
 
 
 # Plain `def` (not async): FastAPI runs it in a threadpool, so the slow
